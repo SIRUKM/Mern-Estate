@@ -6,7 +6,7 @@ import authRouter from "./routes/auth.route.js";
 
 dotenv.config();
 
-console.log(process.env.MONGO);
+
 
 mongoose
   .connect(process.env.MONGO)
@@ -29,11 +29,22 @@ app.use((req, res, next) => {
 });
 
 // General Error Handling Middleware (optional)
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).json({ message: "Something went wrong!" });
+// });
+
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong!" });
-});
+  const statusCode = res.statusCode || 500;
+  const message = err.message || "Internal Server Error!";
+  return res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
+  });
+})
 
 app.listen(3000, () => {
   console.log("server is running on port 3000!!");
 });
+
